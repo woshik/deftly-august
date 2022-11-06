@@ -7,7 +7,8 @@ FILE_LOCATION=""
 LOCATION_NAME=""
 
 function help() {
-    printf "\nscript usage:\n"
+    echo "--help: get script flugs option"
+    printf "script usage:\n"
     printf "\t-h: database hostname\n"
     printf "\t-p: database port\n"
     printf "\t-u: database username\n"
@@ -15,10 +16,11 @@ function help() {
     printf "\t-d: database name\n"
     printf "\t-f: shape file location\n"
     printf "\t-l: Geographic name for shape file\n"
+    
 }
 
 # determine flugs
-while getopts 'h:f:l:p:u:d:P:' flag; do
+while getopts 'h:f:l:p:u:d:P:--help:' flag; do
   case "$flag" in
     h)
         DATABASE_HOST=$OPTARG;;
@@ -34,6 +36,9 @@ while getopts 'h:f:l:p:u:d:P:' flag; do
         FILE_LOCATION=$OPTARG;;
     l)
         LOCATION_NAME=$OPTARG;;
+    ?)
+        help
+        exit 1;;
     *)
         help
         exit 1;;
@@ -43,7 +48,7 @@ done
 # check required parameters
 if [ -z $DATABASE_HOST ] || [ -z $DATABASE_PORT ] || [ -z $DATABASE_USER ] || [ -z $DATABASE_PASSWORD ] || [ -z $DATABASE_NAME ] || [ -z $FILE_LOCATION ] || [ -z $LOCATION_NAME ]
 then
-    echo "All flugs are required"
+    printf "All flugs are required\n\n"
     help
     exit 1
 fi
