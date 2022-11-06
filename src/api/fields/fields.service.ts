@@ -10,7 +10,7 @@ export class FieldsService {
   private readonly repository: Repository<Field>;
 
   findLocation({ lon, lat }: Location) {
-    const result = this.repository
+    return this.repository
       .createQueryBuilder()
       .select(
         `json_build_object('type', 'Feature', 'geometry', ST_AsGeoJSON(geom)::json)`,
@@ -19,7 +19,5 @@ export class FieldsService {
         `ST_Intersects(geom, ST_GeomFromText('POINT(${lon} ${lat})', 4326))`,
       )
       .execute();
-
-    return result;
   }
 }
