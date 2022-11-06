@@ -13,7 +13,7 @@ export class FieldsService {
     const result = this.repository
       .createQueryBuilder()
       .select(
-        `json_build_object('type', 'Feature', 'geometry', (ST_AsGeoJSON(ST_GeometryN(Field.geom, 1))::json))`,
+        `json_build_object('type', 'Feature', 'geometry', ST_AsGeoJSON(geom)::json)`,
       )
       .where(
         `ST_Intersects(geom, ST_GeomFromText('POINT(${lon} ${lat})', 4326))`,

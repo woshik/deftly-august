@@ -55,6 +55,20 @@ fi
 
 DB_CONNECTION="PGPASSWORD=$DATABASE_PASSWORD psql -h $DATABASE_HOST -p $DATABASE_PORT -U $DATABASE_USER -d $DATABASE_NAME"
 
+# create temp table
+DB_CREATE_TEMP_TABLE_SQL="
+    CREATE TABLE IF NOT EXISTS temp (
+        gid BIGSERIAL NOT NULL PRIMARY KEY,
+        id VARCHAR(50),
+        geom geometry
+    )
+"
+eval "$DB_CONNECTION -t -c '$DB_CREATE_TEMP_TABLE_SQL'"
+
+# insert data in temp table
+eval "shp2pgsql -s 4326 -a $FILE_LOCATION temp | $DB_CONNECTION"
+
+# create field table
 DB_CREATE_FIELD_TABLE_SQL="
     CREATE TABLE IF NOT EXISTS field (
         gid BIGSERIAL NOT NULL PRIMARY KEY,
@@ -63,6 +77,22 @@ DB_CREATE_FIELD_TABLE_SQL="
     )
 "
 
+eval "$DB_CONNECTION -t -c '$DB_CREATE_FIELD_TABLE_SQL'"
+
+# create field table geom index
+DB_FIELD_TABLE_INDEX="CREATE INDEX IF NOT EXISTS field_geom ON field USING GIST(geom)"
+
+eval "$DB_CONNECTION -t -c '$DB_FIELD_TABLE_INDEX'"
+
+# insert data in field table
+DB_INSERT_DATA_IN_FIELD_TABLE="
+    INSERT INTO field (id, geom)
+    SELECT id, ST_GeometryN(geom, 1) AS geom FROM temp
+"
+
+eval "$DB_CONNECTION -t -c '$DB_INSERT_DATA_IN_FIELD_TABLE'"
+
+# create area table
 DB_CREATE_AREA_TABLE_SQL="
     CREATE TABLE IF NOT EXISTS area (
         id SERIAL NOT NULL PRIMARY KEY,
@@ -71,18 +101,27 @@ DB_CREATE_AREA_TABLE_SQL="
     )
 "
 
+eval "$DB_CONNECTION -t -c '$DB_CREATE_AREA_TABLE_SQL'"
+
+# create area table geom index
+DB_AREA_TABLE_INDEX="CREATE INDEX IF NOT EXISTS area_geom ON area USING GIST(geom)"
+
+eval "$DB_CONNECTION -t -c '$DB_AREA_TABLE_INDEX'"
+
+# insert data in area table
 DB_AREA_UNIOR_SQL="
     INSERT INTO area (location, geom)
     VALUES (
         '$LOCATION_NAME', 
-        (SELECT ST_Union(ST_GeometryN(geom, 1)) FROM field)
+        (SELECT ST_Union(ST_SnapToGrid(geom,0.03)) FROM temp)
     )
 "
 
-eval "$DB_CONNECTION -t -c '$DB_CREATE_FIELD_TABLE_SQL'"
-
-eval "shp2pgsql -s 4326 -a $FILE_LOCATION field | $DB_CONNECTION"
-
-eval "$DB_CONNECTION -t -c '$DB_CREATE_AREA_TABLE_SQL'"
-
 eval "$DB_CONNECTION -t -c \"$DB_AREA_UNIOR_SQL\""
+
+# drop temp table
+DB_DROP_TEMP_TABLE="
+    DROP TABLE temp
+"
+
+eval "$DB_CONNECTION -t -c \"$DB_DROP_TEMP_TABLE\""
