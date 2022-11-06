@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - 5000:80
+    depends_on:
+      - app
+  
+  postgis:
+    image: postgis/postgis:15-3.3-alpine
+    ports:
+      - ${DATABASE_PORT}:5432
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    volumes:
+      - postgis-geo-data:/var/lib/postgresql/data
+    restart: on-failure
+  
+  app:
+    build: .
+    depends_on:
+      - postgis
+
+volumes:
+  postgis-geo-data:
