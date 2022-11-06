@@ -38,7 +38,7 @@ while getopts 'h:f:l:p:u:d:P:--help:' flag; do
         LOCATION_NAME=$OPTARG;;
     ?)
         help
-        exit 1;;
+        exit 0;;
     *)
         help
         exit 1;;
