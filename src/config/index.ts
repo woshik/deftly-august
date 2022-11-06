@@ -1,6 +1,5 @@
 const config = () => ({
   port: parseInt(process.env.PORT, 10),
-  app_url: process.env.APP_URL,
 
   isProduction: process.env.NODE_ENV === 'production',
   isDevelopment: process.env.NODE_ENV === 'development',
