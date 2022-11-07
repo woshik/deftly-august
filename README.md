@@ -4,7 +4,13 @@
 
 ## Description
 
-A node.js based geographic information service which will provide area and field information through API. If you provide longitude and latitude it will provide information about that land. It also provide available land area in our database.
+A node.js based geographic information service which will provide available area and field information through API. If you provide longitude and latitude it will provide information about that land. It also provide available land area in our database.
+
+## Demo
+
+[Geographic Information System - field API](http://ec2-54-251-136-200.ap-southeast-1.compute.amazonaws.com/fields/location?lon=11.158527&lat=60.748885)
+
+[Geographic Information System - area API](http://ec2-54-251-136-200.ap-southeast-1.compute.amazonaws.com/areas)
 
 ## Technology Stack
 
@@ -21,7 +27,7 @@ A node.js based geographic information service which will provide area and field
 
 ### Prerequisites
 
-You need to have `docker`, `docker-compose`, and `Postgis` installed on your computer to run the service. Also you need a Linux environment to run bash script.
+You need to have `docker`, `docker-compose`, `PostgreSQL`, and `Postgis` installed on your computer to run the service. Also you need a Linux environment to run bash script.
 
 ### Steps
 
@@ -37,15 +43,19 @@ You need to have `docker`, `docker-compose`, and `Postgis` installed on your com
 
 ### Load Shape file
 
-1. First change the `load.sh` file permission. Make it executable. `chmod +x ./load.sh`. You get this file root of the project.
-2. Now run the script with all required parameters
-`load.sh -h <DATABASE_HOST> -p <DATABASE_PORT> -u <DATABASE_USER> -P <DATABASE_PASSWORD> -d <DATABASE_NAME> -f <SHAPE_FILE_LOCATION> -l <GEOGRAPHIC_NAME_FOR_SHAPE_FILE>`
+1. Fist make sure you have installed PostgreSQL and Postgis in your local computer because this script using `psql` and `shp2pgsql`, which come with postgreSQL and postgis package.
+2. Change the `load.sh` file permission. Make it executable. `chmod +x ./load.sh`. You get this file root of the project.
+3. Now run the script with all required parameters
+`./load.sh -h <DATABASE_HOST> -p <DATABASE_PORT> -u <DATABASE_USER> -P <DATABASE_PASSWORD> -d <DATABASE_NAME> -f <SHAPE_FILE_LOCATION> -l <GEOGRAPHIC_NAME_FOR_SHAPE_FILE>`
 if you run `load.sh --help` get all option as well.
+4. If you using the default configuration the command will be something like this
+`./load.sh -h localhost -p 8585 -u woshik -P pass -d deftlyaugust -f test_shapefile -l Norway`
+docker-compose postgis container exposing 8585 port for local usage.
 
 ## API Documentation
 
-|    API   | Method | Query Param | Descrition
-|---------- |--------|-------|------------
+|    API    | Method | Query Param | Descrition
+|-----------|--------|-------------|------------
 | /fields/location    | GET | lon: number <br /> lat: number | If pass lon and lat as query parameter, this endpont return field polygon.
 | /areas  | GET  | None | This endpoint return all available polygon in database with simple format.
 
