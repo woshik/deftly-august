@@ -113,7 +113,7 @@ DB_AREA_UNIOR_SQL="
     INSERT INTO area (location, geom)
     VALUES (
         '$LOCATION_NAME', 
-        (SELECT ST_Union(ST_SnapToGrid(geom,0.03)) FROM temp)
+        (SELECT ST_Envelope(ST_Buffer(ST_Union(geom), 0.0001)) FROM temp)
     )
 "
 
