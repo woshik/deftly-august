@@ -46,11 +46,15 @@ You need to have `docker`, `docker-compose`, `PostgreSQL`, and `Postgis` install
 1. Fist make sure you have installed PostgreSQL and Postgis in your local computer because this script using `psql` and `shp2pgsql`, which come with postgreSQL and postgis package.
 2. Change the `load.sh` file permission. Make it executable. `chmod +x ./load.sh`. You get this file root of the project.
 3. Now run the script with all required parameters
-`./load.sh -h <DATABASE_HOST> -p <DATABASE_PORT> -u <DATABASE_USER> -P <DATABASE_PASSWORD> -d <DATABASE_NAME> -f <SHAPE_FILE_LOCATION> -l <GEOGRAPHIC_NAME_FOR_SHAPE_FILE>`
+`./load.sh -h <DATABASE_HOST> -p <DATABASE_PORT> -u <DATABASE_USERNAME> -P <DATABASE_PASSWORD> -d <DATABASE_NAME> -f <SHAPE_FILE_LOCATION> -l <GEOGRAPHIC_NAME_FOR_SHAPE_FILE>`
 if you run `load.sh --help` get all option as well.
 4. If you using the default configuration the command will be something like this
-`./load.sh -h localhost -p 8585 -u woshik -P pass -d deftlyaugust -f test_shapefile -l Norway`
+`./load.sh -h localhost -p 8585 -u <DATABASE_USERNAME> -P <DATABASE_PASSWORD> -d <DATABASE_NAME> -f <SHAPE_FILE_LOCATION> -l Norway`
 docker-compose postgis container exposing 8585 port for local usage.
+
+### PG ADMIN
+
+If need to look into the database you can use pg admin container for that. Run the `./pgAdmin-start.sh` from root of the project. It already build with docker-compose network so that you can easily connect with the postgis container. The hostname will be docker-compose container name.
 
 ## API Documentation
 
@@ -74,17 +78,20 @@ Response
 ```
 
 {
-    "type": "Polygon",
-    "coordinates": [
-        [
+    "type": "Feature",
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
             [
-                longitude,
-                latitude
+                [
+                    longitude,
+                    latitude
+                ],
+                ....
             ],
-            ...
+            ....
         ]
-        ...
-    ]
+    }
 }
 ```
 
@@ -103,19 +110,23 @@ Response
     "type": "FeatureCollection",
     "features": [
         {
-            "type": "Polygon",
-            "coordinates": [
-                [
+            "type": "Feature",
+            "name": "Geographic name",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
                     [
-                        longitude,
-                        latitude
-                    ],
-                    ...
+                        [
+                            11.16,
+                            60.75
+                        ],
+                        ....
+                    ]
+                    ....
                 ]
-                ...
-            ]
+            }
         }
-        ...
+        ....
     ]
 }
 ```

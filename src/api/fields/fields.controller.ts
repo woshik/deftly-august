@@ -11,8 +11,8 @@ export class FieldsController {
   findLocation(@Query() query: LocationDto, @Res() res: Response) {
     this.fieldsService
       .findLocation(query)
-      .then((result: Array<{ json_build_object: any }>) => {
-        const data = result?.[0]?.json_build_object;
+      .then((result: Array<{ geoInfo: any }>) => {
+        const data = result?.[0]?.geoInfo;
 
         if (data) {
           res.status(HttpStatus.OK).json(data);

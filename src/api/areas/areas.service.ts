@@ -12,7 +12,17 @@ export class AreasService {
     const result = this.repository
       .createQueryBuilder()
       .select(
-        `json_build_object('type', 'FeatureCollection', 'features', json_agg(ST_AsGeoJSON(geom)::json))`,
+        `json_build_object(
+          'type', 'FeatureCollection', 
+          'features', json_agg(
+            json_build_object(
+              'type', 'Feature', 
+              'name', location,
+              'geometry', ST_AsGeoJSON(geom)::json
+            )
+          )
+        )`,
+        'geoInfo',
       )
       .execute();
 
