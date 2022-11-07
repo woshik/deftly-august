@@ -34,7 +34,7 @@ You need to have `docker`, `docker-compose`, `PostgreSQL`, and `Postgis` install
 1. Clone this repository.
 2. Go to application directory and copy the `.sample.env` file, paste it in same directory as `.env`.
 3. Set the database configuration. This configuration also use by docker-compose file. So what you set for the `DATABASE_NAME`, `DATABASE_USER` and `DATABASE_PASSWORD`, it also use for the docker postgis container.
-4. The `DATABASE_HOST`, keep it same as sample file because `postgis` name is using for docker-compose postgis container. If you want to change the database host name, you also need to change the postgis container name in docker-compose.
+4. The `DATABASE_HOST`, keep it same as sample file because `postgis` name is using for docker-compose postgis container. If you want to change the database host name, you also need to change the postgis container name in docker-compose to connect it internally.
 5. The `DATABASE_PORT`, keep it same as sample file, as our application and database communicate internally so they connect on postgres default port.
 6. For application port, exposing `8000`, keep it same. If you want to change it, please also change the port number from nginx.conf file. You will find the file in `nginx` folder.
 7. Set the `NODE_ENV` as you need. `development` / `production`
@@ -48,13 +48,13 @@ You need to have `docker`, `docker-compose`, `PostgreSQL`, and `Postgis` install
 3. Now run the script with all required parameters
 `./load.sh -h <DATABASE_HOST> -p <DATABASE_PORT> -u <DATABASE_USERNAME> -P <DATABASE_PASSWORD> -d <DATABASE_NAME> -f <SHAPE_FILE_LOCATION> -l <GEOGRAPHIC_NAME_FOR_SHAPE_FILE>`
 if you run `load.sh --help` get all option as well.
-4. If you using the default configuration the command will be something like this
-`./load.sh -h localhost -p 8585 -u <DATABASE_USERNAME> -P <DATABASE_PASSWORD> -d <DATABASE_NAME> -f <SHAPE_FILE_LOCATION> -l Norway`
+4. If you using the default configuration the command will be something like this as example
+`./load.sh -h localhost -p 8585 -u test -P test -d deftly -f ./test-shape -l Bangladesh`.
 docker-compose postgis container exposing 8585 port for local usage.
 
 ### PG ADMIN
 
-If need to look into the database you can use pg admin container for that. Run the `./pgAdmin-start.sh` from root of the project. It already build with docker-compose network so that you can easily connect with the postgis container. The hostname will be docker-compose container name.
+If need to look into the database you can use pg admin container for that. Run the `./pgAdmin-start.sh` from root of the project. It already bind with docker-compose network so that you can easily connect with the postgis container.
 
 ## API Documentation
 
